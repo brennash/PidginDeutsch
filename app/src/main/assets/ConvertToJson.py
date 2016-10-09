@@ -1,25 +1,31 @@
 import sys
 import os
+import commands
 import codecs
 import json
+import random
 from optparse import OptionParser
 
 class ConvertToJson:
 
 	def __init__(self, verboseFlag, inputFilename):
-		inputFile = codecs.open(inputFilename, encoding='utf-8', mode='r')
+
+		fileCodec = commands.getoutput('file -b --mime-encoding %s' % inputFilename)
+		inputFile = codecs.open(inputFilename, 'r', fileCodec)
 		for index, line in enumerate(inputFile):
-			index1 = line.index('[')
-			index2 = line.index(']')
-			german = line[0:index1].lstrip().rstrip()
-			english = line[index2+1:].lstrip().rstrip()
+			index1  = line.index('[')
+			index2  = line.rfind(']')
+ 			deWord  = line[0:index1].rstrip().lstrip()
+ 			enWord  = line[index2+1:].rstrip().lstrip()
 			element = {}
-			element['EN'] = english
-			element['DE'] = german
-			element['EN-SOUND'] = '{0}_EN.mp3'.format(index+1)
-			element['DE-SOUND'] = '{0}_DE.mp3'.format(index+1)
-			jsonStr = json.dumps(element)
-			print unicode(jsonStr, 'utf-8').encode('utf-8')
+			element['EN'] = enWord
+			element['DE'] = deWord
+			element['EN-SOUND']   = []
+			element['DE-SOUND']   = []
+			element['DIFFICULTY'] = round(random.uniform(0.0,1.0),4)
+			jsonStr = json.dumps(element, ensure_ascii=False).encode('utf-8')
+			print jsonStr
+
 def main(argv):
 	parser = OptionParser(usage="Usage: ConvertToJson <input-filename>")
 

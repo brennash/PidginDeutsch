@@ -57,6 +57,20 @@ public class Word {
         this.enSound = enSound;
     }
 
+    public void increaseComplexity(){
+        complexity += 0.01;
+        if (complexity > 0.95){
+            complexity = 0.95;
+        }
+    }
+
+    public void decreaseComplexity(){
+        complexity -= 0.01;
+        if (complexity < 0.05){
+            complexity = 0.05;
+        }
+    }
+
     @Override
     public String toString() {
         return "Word{" +

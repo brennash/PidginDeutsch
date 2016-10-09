@@ -21,21 +21,15 @@ public class WordStore {
         this.wordList = parseJSON(jsonString);
     }
 
-    public String getWord(double complexity){
+    public Word getWord(double complexity){
         int index = randomGenerator.nextInt(wordList.size());
         Word word = (Word) wordList.get(index);
 
-        if (word.getDeWord() == null) {
-            return ("EMPTY"+Integer.toString(index));
-        } else {
-            return word.getDeWord();
-        }
-/**        if ((word.getComplexity() < (complexity-0.1)) || (word.getComplexity() > (complexity+0.1))){
+        if ((word.getComplexity() < (complexity-0.1)) || (word.getComplexity() > (complexity+0.1))){
             return getWord(complexity);
         } else {
             return word;
         }
- **/
     }
 
     private String loadJSONFromAsset(Context appContext, Language language) {
@@ -70,5 +64,24 @@ public class WordStore {
         return outputList;
     }
 
+    public void incorrectWord(Word word){
+        int index = wordList.indexOf(word);
+        if (index != -1){
+            word.increaseComplexity();
+            wordList.add(index, word);
+        }
+    }
 
+    /**
+     * Function is called when a user guesses a word correctly.
+     * This makes the complexity of the work reduce.
+     * @param word The word which was guessed correctly.
+     */
+    public void correctWord(Word word){
+        int index = wordList.indexOf(word);
+        if (index != -1){
+            word.decreaseComplexity();
+            wordList.add(index, word);
+        }
+    }
 }
