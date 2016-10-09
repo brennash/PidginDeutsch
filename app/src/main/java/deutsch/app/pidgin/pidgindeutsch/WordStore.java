@@ -1,0 +1,74 @@
+package deutsch.app.pidgin.pidgindeutsch;
+
+import android.content.Context;
+
+import com.google.gson.Gson;
+import java.util.Random;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+
+public class WordStore {
+
+    private ArrayList<Word> wordList;
+    private Random randomGenerator;
+
+    public WordStore(Context context, Language language){
+        randomGenerator = new Random();
+        String jsonString = loadJSONFromAsset(context, language);
+        this.wordList = parseJSON(jsonString);
+    }
+
+    public String getWord(double complexity){
+        int index = randomGenerator.nextInt(wordList.size());
+        Word word = (Word) wordList.get(index);
+
+        if (word.getDeWord() == null) {
+            return ("EMPTY"+Integer.toString(index));
+        } else {
+            return word.getDeWord();
+        }
+/**        if ((word.getComplexity() < (complexity-0.1)) || (word.getComplexity() > (complexity+0.1))){
+            return getWord(complexity);
+        } else {
+            return word;
+        }
+ **/
+    }
+
+    private String loadJSONFromAsset(Context appContext, Language language) {
+        String json = null;
+
+        try {
+            InputStream is = appContext.getAssets().open("de.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    private ArrayList<Word> parseJSON(String jsonListString){
+        ArrayList<Word> outputList = new ArrayList<Word>();
+        StringTokenizer stringTokenizer = new StringTokenizer(jsonListString, "\n");
+        Gson gson = new Gson();
+
+        while (stringTokenizer.hasMoreElements()) {
+            String jsonString = (String) stringTokenizer.nextElement();
+            Word word = gson.fromJson(jsonString, Word.class);
+            System.out.println("Found word: "+word.getDeWord());
+            outputList.add(word);
+        }
+
+        return outputList;
+    }
+
+
+}
